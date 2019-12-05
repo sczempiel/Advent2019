@@ -19,7 +19,6 @@ public class Day4Task2Main {
 				char[] digits = String.valueOf(current).toCharArray();
 
 				char lastDigit = digits[0];
-				int lastDigitValue = Integer.valueOf(String.valueOf(lastDigit));
 
 				List<Integer> counts = new ArrayList<>();
 				counts.add(1);
@@ -34,14 +33,11 @@ public class Day4Task2Main {
 						counts.add(1);
 					}
 
-					int currentValue = Integer.valueOf(String.valueOf(digit));
-
-					if (currentValue < lastDigitValue) {
+					if (digit < lastDigit) {
 						continue outer;
 					}
 
 					lastDigit = digit;
-					lastDigitValue = currentValue;
 				}
 
 				for (Integer count : counts) {

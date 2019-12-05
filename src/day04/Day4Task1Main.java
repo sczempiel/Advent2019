@@ -17,7 +17,6 @@ public class Day4Task1Main {
 				char[] digits = String.valueOf(current).toCharArray();
 
 				char lastDigit = digits[0];
-				int lastDigitValue = Integer.valueOf(String.valueOf(lastDigit));
 
 				boolean isSame = false;
 				for (int i = 1; i < digits.length; i++) {
@@ -27,14 +26,11 @@ public class Day4Task1Main {
 						isSame = true;
 					}
 
-					int currentValue = Integer.valueOf(String.valueOf(digit));
-
-					if (currentValue < lastDigitValue) {
+					if (digit < lastDigit) {
 						continue outer;
 					}
 
 					lastDigit = digit;
-					lastDigitValue = currentValue;
 				}
 
 				if (isSame) {
