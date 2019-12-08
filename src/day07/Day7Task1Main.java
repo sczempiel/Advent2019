@@ -21,7 +21,7 @@ public class Day7Task1Main {
 
 			for (int p1 = MIN_PHASE; p1 <= MAX_PHASE; p1++) {
 
-				int r1 = new IntCodeComputer(code).compute(null, p1, 0);
+				int r1 = new IntCodeComputer(code).run(null, p1, 0);
 
 				for (int p2 = MIN_PHASE; p2 <= MAX_PHASE; p2++) {
 
@@ -29,7 +29,7 @@ public class Day7Task1Main {
 						continue;
 					}
 
-					int r2 = new IntCodeComputer(code).compute(null, p2, r1);
+					int r2 = new IntCodeComputer(code).run(null, p2, r1);
 
 					for (int p3 = MIN_PHASE; p3 <= MAX_PHASE; p3++) {
 
@@ -37,7 +37,7 @@ public class Day7Task1Main {
 							continue;
 						}
 
-						int r3 = new IntCodeComputer(code).compute(null, p3, r2);
+						int r3 = new IntCodeComputer(code).run(null, p3, r2);
 
 						for (int p4 = MIN_PHASE; p4 <= MAX_PHASE; p4++) {
 
@@ -45,7 +45,7 @@ public class Day7Task1Main {
 								continue;
 							}
 
-							int r4 = new IntCodeComputer(code).compute(null, p4, r3);
+							int r4 = new IntCodeComputer(code).run(null, p4, r3);
 
 							for (int p5 = MIN_PHASE; p5 <= MAX_PHASE; p5++) {
 
@@ -53,7 +53,7 @@ public class Day7Task1Main {
 									continue;
 								}
 
-								int r5 = new IntCodeComputer(code).compute(null, p5, r4);
+								int r5 = new IntCodeComputer(code).run(null, p5, r4);
 
 								String phaseSetting = "(" + p1 + ", " + p2 + ", " + p3 + ", " + p4 + ", " + p5 + ")";
 

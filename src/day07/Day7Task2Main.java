@@ -100,7 +100,7 @@ public class Day7Task2Main {
 	}
 
 	private static void compute(int acssUnit, IntCodeComputer[] acss, List<List<Integer>> params) {
-		acss[acssUnit].compute((output) -> {
+		acss[acssUnit].run((output) -> {
 			int nextUnit = acssUnit + 1;
 
 			if (nextUnit > 4) {

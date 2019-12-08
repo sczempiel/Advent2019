@@ -12,17 +12,17 @@ public class IntCodeComputer {
 	private int paramPointer = 0;
 	private boolean running = true;
 
-	private Integer lastOutput = -1;
+	private Integer lastOutput;
 
 	public IntCodeComputer(int[] code) {
 		this.code = Arrays.copyOf(code, code.length);
 	}
 
-	public int compute(Consumer<Integer> output, List<Integer> params) {
-		return compute(output, params.stream().mapToInt(Integer::intValue).toArray());
+	public Integer run(Consumer<Integer> output, List<Integer> params) {
+		return run(output, params.stream().mapToInt(Integer::intValue).toArray());
 	}
 
-	public int compute(Consumer<Integer> output, int... params) {
+	public Integer run(Consumer<Integer> output, int... params) {
 
 		while (running) {
 

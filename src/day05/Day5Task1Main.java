@@ -15,7 +15,7 @@ public class Day5Task1Main {
 			int[] code = Arrays.asList(AdventUtils.getStringInput(5).get(0).split(",")).stream()
 					.mapToInt(Integer::valueOf).toArray();
 
-			int result = new IntCodeComputer(code).compute((output) -> System.out.println(output) ,ID);
+			int result = new IntCodeComputer(code).run((output) -> System.out.println(output) ,ID);
 
 			System.out.println("-----------------------------");
 			AdventUtils.publishResult(5, 1, result);
