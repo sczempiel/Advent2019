@@ -36,6 +36,10 @@ public class AdventUtils {
 		publishResult(day, task, String.valueOf(result));
 	}
 
+	public static void publishResult(int day, int task, long result) throws IOException {
+		publishResult(day, task, String.valueOf(result));
+	}
+
 	public static void publishResult(int day, int task, String result) throws IOException {
 		System.out.println(result);
 		writeResult(day, task, result);
@@ -190,5 +194,5 @@ public class AdventUtils {
 			AdventUtils.writeExtra(day, task, sb.toString(), "grid");
 		}
 	}
-
+	
 }

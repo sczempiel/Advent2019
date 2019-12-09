@@ -1,41 +1,70 @@
 package util;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class IntCodeComputer {
 
-	private final int[] code;
+	private final List<Long> code;
+	private final Consumer<Long> output;
+	private long[] initParams;
 
-	private int codePointer = 0;
-	private int paramPointer = 0;
+	private long codePointer = 0;
+	private int relativeBase = 0;
 	private boolean running = true;
 
-	private Integer lastOutput;
+	private Long lastOutput;
 
-	public IntCodeComputer(int[] code) {
-		this.code = Arrays.copyOf(code, code.length);
+	public IntCodeComputer(List<Long> code, Consumer<Long> output, long... initParams) {
+		if (code == null) {
+			throw new IllegalStateException("Code must not be null.");
+		}
+
+		this.code = new ArrayList<>(code);
+		this.output = output;
+		this.initParams = initParams;
 	}
 
-	public Integer run(Consumer<Integer> output, List<Integer> params) {
-		return run(output, params.stream().mapToInt(Integer::intValue).toArray());
+	public IntCodeComputer(List<Long> code, Consumer<Long> output) {
+		this(code, output, null);
 	}
 
-	public Integer run(Consumer<Integer> output, int... params) {
+	public IntCodeComputer(List<Long> code) {
+		this(code, null);
+	}
+
+	public Long run(List<Long> params) {
+		if (params == null) {
+			return run();
+		}
+
+		return run(params.stream().mapToLong(Long::longValue).toArray());
+	}
+
+	public Long run() {
+		return run(new long[0]);
+	}
+
+	public Long run(long... runParams) {
+
+		long[] params = getParams(runParams);
+
+		int paramPointer = 0;
 
 		while (running) {
 
-			String inst = String.valueOf(code[codePointer++]);
+			String inst = String.valueOf(getValue(codePointer++));
 
 			String optcode = inst.length() > 1 ? inst.substring(inst.length() - 2) : inst.substring(inst.length() - 1);
 
 			String modeParam1 = inst.length() > 2 ? inst.substring(inst.length() - 3, inst.length() - 2) : "0";
 			String modeParam2 = inst.length() > 3 ? inst.substring(inst.length() - 4, inst.length() - 3) : "0";
+			String modeParam3 = inst.length() > 4 ? inst.substring(inst.length() - 5, inst.length() - 4) : "0";
 
-			int value1;
-			int value2;
-			int target;
+			long value1;
+			long value2;
+			long target;
 
 			switch (optcode) {
 			case "99":
@@ -43,36 +72,36 @@ public class IntCodeComputer {
 				break;
 			case "1":
 			case "01":
-				value1 = getValue(code, codePointer++, modeParam1);
-				value2 = getValue(code, codePointer++, modeParam2);
-				target = code[codePointer++];
+				value1 = getValue(modeParam1);
+				value2 = getValue(modeParam2);
+				target = getTarget(modeParam3);
 
-				code[target] = value1 + value2;
+				writeValue(target, value1 + value2);
 				break;
 			case "2":
 			case "02":
-				value1 = getValue(code, codePointer++, modeParam1);
-				value2 = getValue(code, codePointer++, modeParam2);
-				target = code[codePointer++];
+				value1 = getValue(modeParam1);
+				value2 = getValue(modeParam2);
+				target = getTarget(modeParam3);
 
-				code[target] = value1 * value2;
+				writeValue(target, value1 * value2);
 				break;
 			case "3":
 			case "03":
-				target = code[codePointer++];
-				code[target] = params[paramPointer++];
+				target = getTarget(modeParam1);
+				writeValue(target, params[paramPointer++]);
 				break;
 			case "4":
 			case "04":
-				lastOutput = getValue(code, codePointer++, modeParam1);
+				lastOutput = getValue(modeParam1);
 				if (output != null) {
 					output.accept(lastOutput);
 				}
 				break;
 			case "5":
 			case "05":
-				value1 = getValue(code, codePointer++, modeParam1);
-				value2 = getValue(code, codePointer++, modeParam2);
+				value1 = getValue(modeParam1);
+				value2 = getValue(modeParam2);
 
 				if (value1 != 0) {
 					codePointer = value2;
@@ -80,8 +109,8 @@ public class IntCodeComputer {
 				break;
 			case "6":
 			case "06":
-				value1 = getValue(code, codePointer++, modeParam1);
-				value2 = getValue(code, codePointer++, modeParam2);
+				value1 = getValue(modeParam1);
+				value2 = getValue(modeParam2);
 
 				if (value1 == 0) {
 					codePointer = value2;
@@ -89,27 +118,32 @@ public class IntCodeComputer {
 				break;
 			case "7":
 			case "07":
-				value1 = getValue(code, codePointer++, modeParam1);
-				value2 = getValue(code, codePointer++, modeParam2);
-				target = code[codePointer++];
+				value1 = getValue(modeParam1);
+				value2 = getValue(modeParam2);
+				target = getTarget(modeParam3);
 
 				if (value1 < value2) {
-					code[target] = 1;
+					writeValue(target, 1);
 				} else {
-					code[target] = 0;
+					writeValue(target, 0);
 				}
 				break;
 			case "8":
 			case "08":
-				value1 = getValue(code, codePointer++, modeParam1);
-				value2 = getValue(code, codePointer++, modeParam2);
-				target = code[codePointer++];
+				value1 = getValue(modeParam1);
+				value2 = getValue(modeParam2);
+				target = getTarget(modeParam3);
 
 				if (value1 == value2) {
-					code[target] = 1;
+					writeValue(target, 1);
 				} else {
-					code[target] = 0;
+					writeValue(target, 0);
 				}
+				break;
+			case "9":
+			case "09":
+				value1 = getValue(modeParam1);
+				relativeBase += value1;
 				break;
 			}
 		}
@@ -117,12 +151,85 @@ public class IntCodeComputer {
 		return lastOutput;
 	}
 
-	private int getValue(int[] code, int pointer, String mode) {
+	private long getValue(String mode) {
+		long pointer = codePointer++;
+		rangeCheck(pointer);
+
 		if (mode.equals("0")) {
-			return code[code[pointer]];
+			long target = getValue(pointer);
+			rangeCheck(target);
+
+			return getValue(target);
 		}
 
-		return code[pointer];
+		if (mode.equals("2")) {
+			long target = getValue(pointer) + relativeBase;
+			rangeCheck(target);
+
+			return getValue(target);
+		}
+
+		return getValue(pointer);
+	}
+
+	private long getTarget(String mode) {
+		long pointer = codePointer++;
+
+		rangeCheck(pointer);
+
+		if (mode.equals("0")) {
+			return getValue(pointer);
+		}
+
+		if (mode.equals("2")) {
+			return getValue(pointer) + relativeBase;
+		}
+
+		throw new IllegalStateException("Mode for target needs to be 0 or 2.");
+	}
+
+	private long getValue(long target) {
+		return code.get((int) target);
+	}
+
+	private void writeValue(long target, long value) {
+		rangeCheck(target);
+		code.set((int) target, value);
+	}
+
+	private void rangeCheck(long target) {
+		while (target >= code.size()) {
+			code.add(0l);
+		}
+	}
+
+	private long[] getParams(long[] run) {
+		long[] params = run;
+
+		if (params == null) {
+			params = new long[0];
+		}
+
+		if (initParams == null) {
+			return params;
+		}
+
+		long[] withInitial = new long[initParams.length + params.length];
+
+		int toFill = 0;
+
+		for (long param : initParams) {
+			withInitial[toFill++] = param;
+		}
+
+		for (long param : params) {
+			withInitial[toFill++] = param;
+		}
+
+		// only use the initial params in the first run
+		initParams = null;
+
+		return withInitial;
 	}
 
 }

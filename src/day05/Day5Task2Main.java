@@ -2,6 +2,8 @@ package day05;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import util.AdventUtils;
 import util.IntCodeComputer;
@@ -12,10 +14,10 @@ public class Day5Task2Main {
 
 	public static void main(String[] args) {
 		try {
-			int[] code = Arrays.asList(AdventUtils.getStringInput(5).get(0).split(",")).stream()
-					.mapToInt(Integer::valueOf).toArray();
-			
-			int result = new IntCodeComputer(code).run((output) -> System.out.println(output) ,ID);
+			List<Long> code = Arrays.asList(AdventUtils.getStringInput(5).get(0).split(",")).stream().map(Long::valueOf)
+					.collect(Collectors.toList());
+
+			long result = new IntCodeComputer(code, (output) -> System.out.println(output)).run(ID);
 
 			System.out.println("-----------------------------");
 			AdventUtils.publishResult(5, 2, result);

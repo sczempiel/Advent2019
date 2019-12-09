@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import util.AdventUtils;
 import util.IntCodeComputer;
@@ -15,10 +16,10 @@ public class Day7Task2Main {
 
 	public static void main(String[] args) {
 		try {
-			int[] code = Arrays.asList(AdventUtils.getStringInput(7).get(0).split(",")).stream()
-					.mapToInt(Integer::valueOf).toArray();
+			List<Long> code = Arrays.asList(AdventUtils.getStringInput(7).get(0).split(",")).stream().map(Long::valueOf)
+					.collect(Collectors.toList());
 
-			Integer highestThrust = null;
+			Long highestThrust = null;
 			String highestThrustPhaseSetting = null;
 
 			for (int p1 = MIN_PHASE; p1 <= MAX_PHASE; p1++) {
@@ -46,40 +47,24 @@ public class Day7Task2Main {
 								if (p5 == p1 || p5 == p2 || p5 == p3 || p5 == p4) {
 									continue;
 								}
-								IntCodeComputer[] acss = new IntCodeComputer[5];
-								acss[0] = new IntCodeComputer(code);
-								acss[1] = new IntCodeComputer(code);
-								acss[2] = new IntCodeComputer(code);
-								acss[3] = new IntCodeComputer(code);
-								acss[4] = new IntCodeComputer(code);
 
-								List<List<Integer>> params = new ArrayList<>();
-								List<Integer> params1 = new ArrayList<>();
-								params1.add(p1);
-								params1.add(0);
-								params.add(params1);
+								List<Long> thrusts = new ArrayList<>();
 
-								List<Integer> params2 = new ArrayList<>();
-								params2.add(p2);
-								params.add(params2);
+								IntCodeComputer acss1 = null;
+								IntCodeComputer acss5 = new IntCodeComputer(code, (output) -> {
+									thrusts.add(output);
+									acss1.run(output);
+								}, p5);
+								IntCodeComputer acss4 = new IntCodeComputer(code, (output) -> acss5.run(output), p4);
+								IntCodeComputer acss3 = new IntCodeComputer(code, (output) -> acss4.run(output), p3);
+								IntCodeComputer acss2 = new IntCodeComputer(code, (output) -> acss3.run(output), p2);
+								acss1 = new IntCodeComputer(code, (output) -> acss2.run(output), p1, 0);
 
-								List<Integer> params3 = new ArrayList<>();
-								params3.add(p3);
-								params.add(params3);
-
-								List<Integer> params4 = new ArrayList<>();
-								params4.add(p4);
-								params.add(params4);
-
-								List<Integer> params5 = new ArrayList<>();
-								params5.add(p5);
-								params.add(params5);
-
-								compute(0, acss, params);
+								acss1.run(0);
 
 								String phaseSetting = "(" + p1 + ", " + p2 + ", " + p3 + ", " + p4 + ", " + p5 + ")";
-								if (highestThrust == null || highestThrust < params1.get(params1.size() - 1)) {
-									highestThrust = params1.get(params1.size() - 1);
+								if (highestThrust == null || highestThrust < thrusts.get(thrusts.size() - 1)) {
+									highestThrust = thrusts.get(thrusts.size() - 1);
 									highestThrustPhaseSetting = phaseSetting;
 								}
 
@@ -98,17 +83,4 @@ public class Day7Task2Main {
 			e.printStackTrace();
 		}
 	}
-
-	private static void compute(int acssUnit, IntCodeComputer[] acss, List<List<Integer>> params) {
-		acss[acssUnit].run((output) -> {
-			int nextUnit = acssUnit + 1;
-
-			if (nextUnit > 4) {
-				nextUnit = 0;
-			}
-			params.get(nextUnit).add(output);
-			compute(nextUnit, acss, params);
-		}, params.get(acssUnit));
-	}
-
 }
