@@ -50,17 +50,18 @@ public class Day7Task2Main {
 
 								List<Long> thrusts = new ArrayList<>();
 
-								IntCodeComputer acss1 = null;
-								IntCodeComputer acss5 = new IntCodeComputer(code, (output) -> {
-									thrusts.add(output);
-									acss1.run(output);
-								}, p5);
-								IntCodeComputer acss4 = new IntCodeComputer(code, (output) -> acss5.run(output), p4);
-								IntCodeComputer acss3 = new IntCodeComputer(code, (output) -> acss4.run(output), p3);
-								IntCodeComputer acss2 = new IntCodeComputer(code, (output) -> acss3.run(output), p2);
-								acss1 = new IntCodeComputer(code, (output) -> acss2.run(output), p1, 0);
+								IntCodeComputer[] acss = new IntCodeComputer[5];
 
-								acss1.run(0);
+								acss[0] = new IntCodeComputer(code, (output) -> acss[1].run(output), p1, 0);
+								acss[1] = new IntCodeComputer(code, (output) -> acss[2].run(output), p2);
+								acss[2] = new IntCodeComputer(code, (output) -> acss[3].run(output), p3);
+								acss[3] = new IntCodeComputer(code, (output) -> acss[4].run(output), p4);
+								acss[4] = new IntCodeComputer(code, (output) -> {
+									thrusts.add(output);
+									acss[0].run(output);
+								}, p5);
+
+								acss[0].run(0);
 
 								String phaseSetting = "(" + p1 + ", " + p2 + ", " + p3 + ", " + p4 + ", " + p5 + ")";
 								if (highestThrust == null || highestThrust < thrusts.get(thrusts.size() - 1)) {
