@@ -1,226 +1,126 @@
 package day10;
 
 import java.io.IOException;
-import java.math.BigInteger;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.Map.Entry;
-
+import java.util.TreeMap;
 import util.AdventUtils;
 import util.Touple;
 
 public class Day10Task2Main {
 
-	// private static final Touple<Integer, Integer> BASE = new Touple<>(22, 17);
-	private static final Touple<Integer, Integer> BASE = new Touple<>(13, 11);
-	private static Touple<Integer, Integer> lastDestroyed;
-
-	private static Set<Touple<Integer, Integer>> map = new HashSet<>();
+	private static final Touple<Integer, Integer> BASE = new Touple<>(22, 17);
+	private static Touple<Integer, Integer> destroyedNr200;
+	private static Map<Double, List<Touple<Touple<Double, Double>, Touple<Integer, Integer>>>> map = new TreeMap<>();
 	private static int totalAstroidCount = 0;
-	private static int yBound;
-	private static int xBound;
-
-	private static Set<Touple<Integer, Integer>> blocked;
+	private static int totalAstroidsDestroyed = 0;
 
 	public static void main(String[] args) {
 		try {
 			List<String> startValue = AdventUtils.getStringInput(10);
 
-			yBound = startValue.size();
-			xBound = startValue.get(0).length();
+			for (int y = 0; y < startValue.size(); y++) {
 
-			for (int y = 0; y < yBound; y++) {
 				char[] fields = startValue.get(y).toCharArray();
-				for (int x = 0; x < xBound; x++) {
-					if (fields[x] == '#') {
-						map.add(new Touple<>(y, x));
+
+				for (int x = 0; x < fields.length; x++) {
+
+					if (fields[x] == '#' && (y != BASE.getLeft() || x != BASE.getRight())) {
+						Touple<Double, Double> polar = calcPolar(y, x);
+						List<Touple<Touple<Double, Double>, Touple<Integer, Integer>>> astroids = map
+								.get(polar.getRight());
+						if (astroids == null) {
+							astroids = new ArrayList<>();
+						}
+
+						Touple<Touple<Double, Double>, Touple<Integer, Integer>> data = new Touple<>();
+
+						data.setLeft(polar);
+						data.setRight(new Touple<Integer, Integer>(y, x));
+
+						astroids.add(data);
+						astroids.sort(Comparator.comparing(d -> d.getLeft().getLeft()));
+
+						map.put(polar.getRight(), astroids);
 						totalAstroidCount++;
 					}
 				}
 			}
 
-			while (map.size() > totalAstroidCount - 200) {
-				calcBlocked();
-
-				// up
-				for (int y = BASE.getLeft() - 1; y >= 0; y--) {
-					Touple<Integer, Integer> coord = new Touple<>(y, x);
-					if (!coord.equals(BASE) && map.contains(coord) && !blocked.contains(coord)) {
-						map.remove(coord);
-					}
-				}
-
-				if (map.size() <= totalAstroidCount - 200) {
-					break;
-				}
-
-				// up-right
-				int y = 0;
-				int x = BASE.getRight() + 1;
-				for (int yO = BASE.getLeft() - 1; y >= 0; y--) {
-					Touple<Integer, Integer> coord = new Touple<>(y, x);
-					if (map.contains(coord) && !blocked.contains(coord)) {
-						map.remove(coord);
-					}
-				}
-
-				if (map.size() <= totalAstroidCount - 200) {
-					break;
-				}
-				// right
-				for (int y = BASE.getLeft() - 1; y >= 0; y--) {
-					Touple<Integer, Integer> coord = new Touple<>(y, x);
-					if (map.contains(coord) && !blocked.contains(coord)) {
-						map.remove(coord);
-					}
-				}
-
-				if (map.size() <= totalAstroidCount - 200) {
-					break;
-				}
-
-				// right-bottom
-				for (int y = BASE.getLeft() - 1; y >= 0; y--) {
-					Touple<Integer, Integer> coord = new Touple<>(y, x);
-					if (map.contains(coord) && !blocked.contains(coord)) {
-						map.remove(coord);
-					}
-				}
-
-				if (map.size() <= totalAstroidCount - 200) {
-					break;
-				}
-
-				// bottom
-				for (int y = BASE.getLeft() - 1; y >= 0; y--) {
-					Touple<Integer, Integer> coord = new Touple<>(y, x);
-					if (map.contains(coord) && !blocked.contains(coord)) {
-						map.remove(coord);
-					}
-				}
-
-				if (map.size() <= totalAstroidCount - 200) {
-					break;
-				}
-
-				// bottom-left
-				for (int y = BASE.getLeft() - 1; y >= 0; y--) {
-					Touple<Integer, Integer> coord = new Touple<>(y, x);
-					if (map.contains(coord) && !blocked.contains(coord)) {
-						map.remove(coord);
-					}
-				}
-
-				if (map.size() <= totalAstroidCount - 200) {
-					break;
-				}
-
-				// left
-				for (int y = BASE.getLeft() - 1; y >= 0; y--) {
-					Touple<Integer, Integer> coord = new Touple<>(y, x);
-					if (map.contains(coord) && !blocked.contains(coord)) {
-						map.remove(coord);
-					}
-				}
-
-				if (map.size() <= totalAstroidCount - 200) {
-					break;
-				}
-
-				// left-up
-				for (int y = BASE.getLeft() - 1; y >= 0; y--) {
-					Touple<Integer, Integer> coord = new Touple<>(y, x);
-					if (map.contains(coord) && !blocked.contains(coord)) {
-						map.remove(coord);
-					}
-				}
-
-				if (map.size() <= totalAstroidCount - 200) {
-					break;
-				}
+			for (Entry<Double, List<Touple<Touple<Double, Double>, Touple<Integer, Integer>>>> entry : map.entrySet()) {
+				System.out.println("degree: " + entry.getKey() + "; count: " + entry.getValue().size());
 			}
 
+			System.out.println("total: " + totalAstroidCount);
+
 			System.out.println("-------------------------------------");
-			AdventUtils.publishResult(10, 2, (lastDestroyed.getRight() * 100 + lastDestroyed.getLeft()));
+
+			firingMyLaser();
+
+			System.out.println("-------------------------------------");
+			AdventUtils.publishResult(10, 2, (destroyedNr200.getRight() * 100 + destroyedNr200.getLeft()));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
 	}
 
-	private static void calcBlocked() {
-
-		blocked = new HashSet<>();
-
-		for (Touple<Integer, Integer> coord : map) {
-
-			if (BASE.equals(coord) || blocked.contains(coord)) {
+	private static void firingMyLaser() {
+		// move from -90 to 180
+		for (Entry<Double, List<Touple<Touple<Double, Double>, Touple<Integer, Integer>>>> entry : map.entrySet()) {
+			if (entry.getKey() < -90) {
 				continue;
 			}
 
-			int y = coord.getLeft();
-			int x = coord.getRight();
+			destroy(entry);
 
-			int ySteps = y - BASE.getLeft();
-			int xSteps = x - BASE.getRight();
+			if (totalAstroidCount == totalAstroidsDestroyed) {
+				return;
+			}
+		}
 
-			int gcd = gcd(ySteps, xSteps);
+		while (totalAstroidCount > totalAstroidsDestroyed) {
+			for (Entry<Double, List<Touple<Touple<Double, Double>, Touple<Integer, Integer>>>> entry : map.entrySet()) {
+				destroy(entry);
 
-			ySteps = ySteps / gcd;
-			xSteps = xSteps / gcd;
-
-			y = y + ySteps;
-			x = x + xSteps;
-
-			while (x >= 0 && y >= 0 && x < xBound && y < yBound) {
-				Touple<Integer, Integer> blockedField = new Touple<>(y, x);
-
-				if (map.contains(blockedField)) {
-					blocked.add(blockedField);
+				if (totalAstroidCount == totalAstroidsDestroyed) {
+					return;
 				}
-
-				y = y + ySteps;
-				x = x + xSteps;
 			}
-		}
-
-	}
-
-	private static void fireLaser(int y, int x) {
-		int ySteps = BASE.getLeft() - y;
-		int xSteps = BASE.getRight() - x;
-
-		int gcd = gcd(ySteps, xSteps);
-
-		ySteps = ySteps / gcd;
-		xSteps = xSteps / gcd;
-
-		Touple<Integer, Integer> astroid = null;
-
-		while (y != BASE.getLeft() || x != BASE.getRight()) {
-
-			Touple<Integer, Integer> coord = new Touple<>(y, x);
-			if (map.contains(coord)) {
-				astroid = coord;
-			}
-
-			y = y + ySteps;
-			x = x + xSteps;
-		}
-
-		if (astroid != null) {
-			map.remove(astroid);
-			lastDestroyed = astroid;
-			System.out.println("Destroyed (" + astroid.getLeft() + ", " + astroid.getRight() + ") as number "
-					+ (totalAstroidCount - map.size()));
 		}
 	}
 
-	private static int gcd(int a, int b) {
-		BigInteger b1 = BigInteger.valueOf(a);
-		BigInteger b2 = BigInteger.valueOf(b);
-		BigInteger gcd = b1.gcd(b2);
-		return gcd.intValue();
+	private static void destroy(Entry<Double, List<Touple<Touple<Double, Double>, Touple<Integer, Integer>>>> entry) {
+		if (!entry.getValue().isEmpty()) {
+			totalAstroidsDestroyed++;
+			Touple<Touple<Double, Double>, Touple<Integer, Integer>> destroyed = entry.getValue().remove(0);
+
+			if (totalAstroidsDestroyed == 200) {
+				destroyedNr200 = destroyed.getRight();
+			}
+
+			System.out.println("Destroyed (" + totalAstroidsDestroyed + "): y=" + destroyed.getRight().getLeft()
+					+ ", x=" + destroyed.getRight().getRight() + ", degree=" + entry.getKey());
+		}
+	}
+
+	private static Touple<Double, Double> calcPolar(int yMap, int xMap) {
+		// relative to the base
+		int y = yMap - BASE.getLeft();
+		int x = xMap - BASE.getRight();
+
+		Touple<Double, Double> polar = new Touple<>();
+
+		// radius
+		polar.setLeft(Math.sqrt(y * y + x * x));
+
+		// angle
+		polar.setRight(Math.toDegrees(Math.atan2(y, x)));
+
+		return polar;
 	}
 
 }
