@@ -19,6 +19,7 @@ import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class AdventUtils {
@@ -194,5 +195,48 @@ public class AdventUtils {
 			AdventUtils.writeExtra(day, task, sb.toString(), "grid");
 		}
 	}
-	
+
+	public static <T> String printMap(Map<Touple<Integer, Integer>, T> map, Function<T, String> printValue) {
+		Integer smallestY = null;
+		Integer biggestY = null;
+		Integer smallestX = null;
+		Integer biggestX = null;
+
+		for (Touple<Integer, Integer> pos : map.keySet()) {
+
+			int y = pos.getLeft();
+			int x = pos.getRight();
+
+			if (smallestY == null || y < smallestY) {
+				smallestY = y;
+			}
+
+			if (biggestY == null || y > biggestY) {
+				biggestY = y;
+			}
+
+			if (smallestX == null || x < smallestX) {
+				smallestX = x;
+			}
+
+			if (biggestX == null || x > biggestX) {
+				biggestX = x;
+			}
+		}
+
+		StringBuilder sb = new StringBuilder();
+
+		for (int y = smallestY; y <= biggestY; y++) {
+			for (int x = smallestX; x <= biggestX; x++) {
+				sb.append(printValue.apply(map.get(new Touple<>(y, x))));
+			}
+
+			if (y < biggestY) {
+				sb.append("\n");
+			}
+		}
+
+		return sb.toString();
+	}
+
 }

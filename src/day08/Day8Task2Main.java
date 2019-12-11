@@ -53,11 +53,11 @@ public class Day8Task2Main {
 						int pixel = currentLayer[y][x];
 
 						if (pixel == 0) {
-							sb.append(" ");
+							sb.append(".");
 							break;
 						}
 						if (pixel == 1) {
-							sb.append(1);
+							sb.append("#");
 							break;
 						}
 
