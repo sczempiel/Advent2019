@@ -18,7 +18,7 @@ public class Day11Task2Main {
 
 	private static Map<Touple<Integer, Integer>, Long> positions = new HashMap<>();
 	private static Touple<Integer, Integer> currentPos = new Touple<>(0, 0);
-	private static IntCodeComputer computer;
+
 	// 0 up 1 right 2 down 3 left
 	private static int facing = 0;
 
@@ -28,12 +28,15 @@ public class Day11Task2Main {
 			List<Long> code = Arrays.asList(AdventUtils.getStringInput(11).get(0).split(",")).stream()
 					.map(Long::valueOf).collect(Collectors.toList());
 
-			computer = new IntCodeComputer(code, output -> onOutput(output));
+			IntCodeComputer computer = new IntCodeComputer(code);
 
-			computer.run(1);
+			long color = 1;
+			while (computer.isRunning()) {
+				color = onOutput(computer.run(color));
+			}
 
-			String result = AdventUtils.printMap(positions, color -> {
-				if (color == null || color == 0l) {
+			String result = AdventUtils.printMap(positions, col -> {
+				if (col == null || col == 0l) {
 					return ".";
 				} else {
 					return "#";
@@ -46,7 +49,7 @@ public class Day11Task2Main {
 		}
 	}
 
-	private static void onOutput(Long output) {
+	private static long onOutput(Long output) {
 		outputs.add(output);
 		if (outputs.size() % 2 == 1) {
 			positions.put(currentPos, output);
@@ -89,9 +92,9 @@ public class Day11Task2Main {
 			if (color == null) {
 				color = 0l;
 			}
-
-			computer.run(color);
+			return color;
 		}
+		return 0;
 	}
 
 }

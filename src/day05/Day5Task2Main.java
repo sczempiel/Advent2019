@@ -17,7 +17,17 @@ public class Day5Task2Main {
 			List<Long> code = Arrays.asList(AdventUtils.getStringInput(5).get(0).split(",")).stream().map(Long::valueOf)
 					.collect(Collectors.toList());
 
-			long result = new IntCodeComputer(code, (output) -> System.out.println(output)).run(ID);
+			IntCodeComputer computer = new IntCodeComputer(code);
+
+			long result = -1;
+			while (computer.isRunning()) {
+				Long output = computer.run(ID);
+
+				if (output != null) {
+					result = output;
+					System.out.println(result);
+				}
+			}
 
 			System.out.println("-----------------------------");
 			AdventUtils.publishResult(5, 2, result);

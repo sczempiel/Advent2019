@@ -1,7 +1,6 @@
 package day07;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,25 +47,46 @@ public class Day7Task2Main {
 									continue;
 								}
 
-								List<Long> thrusts = new ArrayList<>();
+								IntCodeComputer acs1 = new IntCodeComputer(code, p1, 0);
+								IntCodeComputer acs2 = new IntCodeComputer(code, p2);
+								IntCodeComputer acs3 = new IntCodeComputer(code, p3);
+								IntCodeComputer acs4 = new IntCodeComputer(code, p4);
+								IntCodeComputer acs5 = new IntCodeComputer(code, p5);
 
-								IntCodeComputer[] acss = new IntCodeComputer[5];
+								Long output = 0l;
 
-								acss[0] = new IntCodeComputer(code, (output) -> acss[1].run(output), p1, 0);
-								acss[1] = new IntCodeComputer(code, (output) -> acss[2].run(output), p2);
-								acss[2] = new IntCodeComputer(code, (output) -> acss[3].run(output), p3);
-								acss[3] = new IntCodeComputer(code, (output) -> acss[4].run(output), p4);
-								acss[4] = new IntCodeComputer(code, (output) -> {
-									thrusts.add(output);
-									acss[0].run(output);
-								}, p5);
+								while (acs1.isRunning()) {
+									output = acs1.run(output);
 
-								acss[0].run(0);
+									if (output == null) {
+										break;
+									}
+									output = acs2.run(output);
 
-								String phaseSetting = "(" + p1 + ", " + p2 + ", " + p3 + ", " + p4 + ", " + p5 + ")";
-								if (highestThrust == null || highestThrust < thrusts.get(thrusts.size() - 1)) {
-									highestThrust = thrusts.get(thrusts.size() - 1);
-									highestThrustPhaseSetting = phaseSetting;
+									if (output == null) {
+										break;
+									}
+									output = acs3.run(output);
+
+									if (output == null) {
+										break;
+									}
+									output = acs4.run(output);
+
+									if (output == null) {
+										break;
+									}
+									output = acs5.run(output);
+
+									if (output == null) {
+										break;
+									}
+
+									if (highestThrust == null || highestThrust < output) {
+										highestThrust = output;
+										highestThrustPhaseSetting = "(" + p1 + ", " + p2 + ", " + p3 + ", " + p4 + ", "
+												+ p5 + ")";
+									}
 								}
 
 							}
@@ -76,7 +96,7 @@ public class Day7Task2Main {
 			}
 
 			System.out.println("Highest thrust phase setting: " + highestThrustPhaseSetting);
-			AdventUtils.publishResult(7, 2, highestThrustPhaseSetting + highestThrust);
+			AdventUtils.publishResult(7, 2, highestThrust);
 
 		} catch (
 

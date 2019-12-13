@@ -7,27 +7,19 @@ import java.util.function.Consumer;
 public class IntCodeComputer {
 
 	private final List<Long> code;
-	private final Consumer<Long> output;
 	private long[] initParams;
 
 	private long codePointer = 0;
 	private int relativeBase = 0;
 	private boolean running = true;
 
-	private Long lastOutput;
-
-	public IntCodeComputer(List<Long> code, Consumer<Long> output, long... initParams) {
+	public IntCodeComputer(List<Long> code, long... initParams) {
 		if (code == null) {
 			throw new IllegalStateException("Code must not be null.");
 		}
 
 		this.code = new ArrayList<>(code);
-		this.output = output;
 		this.initParams = initParams;
-	}
-
-	public IntCodeComputer(List<Long> code, Consumer<Long> output) {
-		this(code, output, null);
 	}
 
 	public IntCodeComputer(List<Long> code) {
@@ -69,7 +61,7 @@ public class IntCodeComputer {
 			switch (optcode) {
 			case "99":
 				running = false;
-				break;
+				return null;
 			case "1":
 			case "01":
 				value1 = getValue(modeParam1);
@@ -93,11 +85,7 @@ public class IntCodeComputer {
 				break;
 			case "4":
 			case "04":
-				lastOutput = getValue(modeParam1);
-				if (output != null) {
-					output.accept(lastOutput);
-				}
-				break;
+				return getValue(modeParam1);
 			case "5":
 			case "05":
 				value1 = getValue(modeParam1);
@@ -145,10 +133,20 @@ public class IntCodeComputer {
 				value1 = getValue(modeParam1);
 				relativeBase += value1;
 				break;
+			default:
+				throw new IllegalStateException("Illegal optcode: " + optcode);
 			}
 		}
+		
+		return null;
+	}
 
-		return lastOutput;
+	public boolean isRunning() {
+		return running;
+	}
+
+	public void setRunning(boolean running) {
+		this.running = running;
 	}
 
 	private long getValue(String mode) {
