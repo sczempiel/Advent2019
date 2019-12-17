@@ -42,10 +42,8 @@ public class Day16Task2Main {
 				for (int i = 0; i < digits.length; i++) {
 
 					long sum = 0;
-					for (int j = 0; j < digits.length; j++) {
-						if (j >= i) {
-							sum += digits[j];
-						}
+					for (int j = i; j < digits.length; j++) {
+						sum += digits[j];
 					}
 
 					String sumAsString = String.valueOf(sum);
@@ -53,8 +51,7 @@ public class Day16Task2Main {
 				}
 				digits = newDigits;
 
-				System.out.println(
-						" -> finished after: " + getPrettyTimeElapsed(start, System.currentTimeMillis()));
+				System.out.println(" -> finished after: " + getPrettyTimeElapsed(start, System.currentTimeMillis()));
 			}
 
 			System.out.println("----------------------------");
