@@ -39,16 +39,15 @@ public class Day16Task2Main {
 
 				long[] newDigits = new long[digits.length];
 
-				for (int i = 0; i < digits.length; i++) {
+				long sum = 0;
 
-					long sum = 0;
-					for (int j = i; j < digits.length; j++) {
-						sum += digits[j];
-					}
+				for (int i = digits.length - 1; i >= 0; i--) {
+					sum += digits[i];
 
 					String sumAsString = String.valueOf(sum);
 					newDigits[i] = Character.getNumericValue(sumAsString.charAt(sumAsString.length() - 1));
 				}
+
 				digits = newDigits;
 
 				System.out.println(" -> finished after: " + getPrettyTimeElapsed(start, System.currentTimeMillis()));
