@@ -8,6 +8,10 @@ public class CoordingateGraph extends Graph<Touple<Integer, Integer>, Coordingat
 		return getNode(new Touple<>(y, x));
 	}
 
+	public CoordingateNode addNode(Touple<Integer, Integer> coord) {
+		return addNode(coord.getLeft(), coord.getRight());
+	}
+
 	public CoordingateNode addNode(int y, int x) {
 		CoordingateNode node = new CoordingateNode(y, x);
 
@@ -30,6 +34,11 @@ public class CoordingateGraph extends Graph<Touple<Integer, Integer>, Coordingat
 
 		node.addDestination(other, 1);
 		other.addDestination(node, 1);
+	}
+
+	public Graph<Touple<Integer, Integer>, CoordingateNode> calculateShortestPathFromSource(
+			Touple<Integer, Integer> coord) {
+		return calculateShortestPathFromSource(getNode(coord.getLeft(), coord.getRight()));
 	}
 
 	public Graph<Touple<Integer, Integer>, CoordingateNode> calculateShortestPathFromSource(int y, int x) {
