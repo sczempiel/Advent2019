@@ -54,7 +54,7 @@ public class Day19Task2Main {
 				y++;
 			}
 
-			AdventUtils.publishResult(19, 1, foundX * 10000 + foundY);
+			AdventUtils.publishResult(19, 2, foundX * 10000 + foundY);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
