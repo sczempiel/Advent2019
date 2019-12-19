@@ -14,6 +14,7 @@ import util.Touple;
 import util.pathfinding.CoordingateGraph;
 import util.pathfinding.CoordingateNode;
 
+// 3118 h
 public class Day18Task1Main {
 
 	private static Integer shortestFinished;
