@@ -136,7 +136,7 @@ public class IntCodeComputer {
 				throw new IllegalStateException("Illegal optcode: " + optcode);
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -227,6 +227,20 @@ public class IntCodeComputer {
 		initParams = null;
 
 		return withInitial;
+	}
+
+	public static long[] asInstruction(String... moves) {
+		List<Long> instructions = new ArrayList<>();
+
+		for (String move : moves) {
+			for (int i = 0; i < move.length(); i++) {
+				instructions.add((long) move.charAt(i));
+			}
+
+			instructions.add((long) '\n');
+		}
+
+		return instructions.stream().mapToLong(Long::longValue).toArray();
 	}
 
 }

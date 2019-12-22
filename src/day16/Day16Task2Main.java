@@ -50,7 +50,8 @@ public class Day16Task2Main {
 
 				digits = newDigits;
 
-				System.out.println(" -> finished after: " + getPrettyTimeElapsed(start, System.currentTimeMillis()));
+				System.out.println(
+						" -> finished after: " + AdventUtils.getPrettyTimeElapsed(start, System.currentTimeMillis()));
 			}
 
 			System.out.println("----------------------------");
@@ -65,37 +66,6 @@ public class Day16Task2Main {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	private static String getPrettyTimeElapsed(long start, long now) {
-		long elapsed = now - start;
-
-		long hours = (elapsed / 1000) / 60 / 60;
-		long minutes = (elapsed / 1000) / 60;
-		long seconds = (elapsed / 1000) % 60;
-		long milli = elapsed % 1000;
-
-		StringBuilder sb = new StringBuilder();
-
-		if (hours != 0) {
-			sb.append(hours);
-			sb.append("h ");
-		}
-		if (minutes != 0) {
-			sb.append(minutes);
-			sb.append("m ");
-		}
-		if (seconds != 0) {
-			sb.append(seconds);
-			sb.append("s ");
-		}
-		if (milli != 0) {
-			sb.append(milli);
-			sb.append("ms ");
-		}
-
-		return sb.toString();
-
 	}
 
 }

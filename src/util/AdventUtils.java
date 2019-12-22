@@ -68,6 +68,7 @@ public class AdventUtils {
 		try {
 			w = new BufferedWriter(new FileWriter(new File(getExtraFilePath(day, task, extraName)), true));
 			w.write(result);
+			w.write("\n");
 		} finally {
 			if (w != null) {
 				w.close();
@@ -76,7 +77,7 @@ public class AdventUtils {
 	}
 
 	public static void publishNewExtraLine(int day, int task, String result, String extraName) throws IOException {
-		System.out.print(result);
+		System.out.println(result);
 		writeNewExtraLine(day, task, result, extraName);
 	}
 
@@ -237,6 +238,37 @@ public class AdventUtils {
 		}
 
 		return sb.toString();
+	}
+
+	public static String getPrettyTimeElapsed(long start, long now) {
+		long elapsed = now - start;
+
+		long hours = (elapsed / 1000) / 60 / 60;
+		long minutes = (elapsed / 1000) / 60;
+		long seconds = (elapsed / 1000) % 60;
+		long milli = elapsed % 1000;
+
+		StringBuilder sb = new StringBuilder();
+
+		if (hours != 0) {
+			sb.append(hours);
+			sb.append("h ");
+		}
+		if (minutes != 0) {
+			sb.append(minutes);
+			sb.append("m ");
+		}
+		if (seconds != 0) {
+			sb.append(seconds);
+			sb.append("s ");
+		}
+		if (milli != 0) {
+			sb.append(milli);
+			sb.append("ms ");
+		}
+
+		return sb.toString();
+
 	}
 
 }
