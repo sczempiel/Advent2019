@@ -2,6 +2,7 @@ package util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public class IntCodeComputer {
 
@@ -25,6 +26,10 @@ public class IntCodeComputer {
 		this(code, null);
 	}
 
+	public Long run() {
+		return run(new long[0]);
+	}
+
 	public Long run(List<Long> params) {
 		if (params == null) {
 			return run();
@@ -33,13 +38,13 @@ public class IntCodeComputer {
 		return run(params.stream().mapToLong(Long::longValue).toArray());
 	}
 
-	public Long run() {
-		return run(new long[0]);
+	public Long run(long... runParams) {
+		long[] params = getParams(runParams);
+
+		return run(pointer -> params[pointer]);
 	}
 
-	public Long run(long... runParams) {
-
-		long[] params = getParams(runParams);
+	public Long run(Function<Integer, Long> paramFunction) {
 
 		int paramPointer = 0;
 
@@ -80,7 +85,7 @@ public class IntCodeComputer {
 			case "3":
 			case "03":
 				target = getTarget(modeParam1);
-				writeValue(target, params[paramPointer++]);
+				writeValue(target, paramFunction.apply(paramPointer++));
 				break;
 			case "4":
 			case "04":
